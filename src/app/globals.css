@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+:root {
+  --jt-primary: #00bebe;
+  --jt-primary-light: #e6f9f9;
+  --jt-primary-dark: #009e9e;
+  --jt-primary-hover: #aff1e8;
+  --jt-success: #00b90b;
+  --jt-warning: #ff7300;
+  --jt-error: #ff4d4f;
+  --jt-bg: #f3f9fe;
+  --jt-card-bg: #ffffff;
+  --jt-text: rgba(0, 0, 0, 0.8);
+  --jt-text-secondary: rgba(0, 0, 0, 0.4);
+  --jt-border: #ebeef5;
+  --jt-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.06);
+  --radius-card: 8px;
+  --radius-btn: 8px;
+}
+
+@theme inline {
+  --color-jt: var(--jt-primary);
+  --color-jt-light: var(--jt-primary-light);
+  --color-jt-dark: var(--jt-primary-dark);
+  --color-jt-hover: var(--jt-primary-hover);
+  --color-jt-success: var(--jt-success);
+  --color-jt-warning: var(--jt-warning);
+  --color-jt-error: var(--jt-error);
+  --color-jt-bg: var(--jt-bg);
+  --color-jt-card: var(--jt-card-bg);
+  --color-jt-text: var(--jt-text);
+  --color-jt-text-secondary: var(--jt-text-secondary);
+  --color-jt-border: var(--jt-border);
+}
+
+body {
+  background: var(--jt-bg);
+  color: var(--jt-text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+dialog[open] {
+  padding: 10px !important;
+  border: none !important;
+  outline: none !important;
+}
