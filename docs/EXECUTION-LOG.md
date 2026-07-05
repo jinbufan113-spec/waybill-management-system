@@ -193,9 +193,56 @@
 
 ---
 
-## 步骤 13：构建部署与自测（进行中）
+## 步骤 13：构建部署与自测 ✅
 
+### 构建
 - V2 `next build`：✅ 通过（4 个新路由注册）
-- V3 `tsc --noEmit`：✅ 通过
-- 端到端自测：✅ 全部场景通过（见步骤 6–10 验证表）
-- Vercel 部署：待执行（见下节）
+- V3 `next build`：✅ 通过（26 个路由：17 API + 9 页面）
+- V3 `tsc --noEmit`：✅ 通过（0 错误）
+
+### Git 推送
+- ✅ 已推送到 https://github.com/jinbufan113-spec/waybill-management-system.git（main 分支，71 个文件）
+
+### 端到端自测（全部通过）
+| 场景 | 结果 |
+|---|---|
+| 上报真实运单 | 200，data_source=REALTIME |
+| 上报不存在运单 | 400（V2 实时校验拦截 + request_id） |
+| 同类型重复上报 | 409 |
+| L1 通过（金额<阈值） | 直接 EXECUTING + 联动生效 |
+| L1 通过（金额>阈值） | 自动升 L2 |
+| L2 通过 | EXECUTING |
+| 自批禁止 | 403 |
+| 幂等（重复 Idempotency-Key） | 返回既有记录 |
+| 并发（两人同批） | 一人 200、一人 409 |
+| 扫描异常 SKU | 工单创建 + 批次 LOCKED |
+| 重复扫描同批次 | 追加记录（不新建工单） |
+| 扫描无关 SKU | 400（SKU 归属校验拦截） |
+| 品控主管误判放行 | COMPLETED + 留痕 + 批次解锁 |
+| 非主管放行 | 403 |
+| 品控执行（退供应商） | 追偿赔付（direction=SUPPLIER）+ 库存变更 + 反查链 |
+| AI 分类/建议（无 key） | 优雅降级，不阻塞 |
+| 200+ 工单列表/筛选/分页 | 流畅 |
+
+### Vercel 部署（需用户完成授权）
+Vercel CLI 已安装（v53.1.0），但 `vercel whoami` 触发设备 OAuth 登录流程，需用户在浏览器授权（自动化环境无法完成）。
+
+**用户部署步骤**：
+1. 在 V3 项目目录运行 `npx vercel link`（关联/创建独立 Vercel 项目）。
+2. 在 Vercel Dashboard 配置环境变量（或 `vercel env add`）：
+   - `POSTGRES_URL` = V3 Neon（autumn-waterfall-84758359）连接串
+   - `V2_BASE_URL` = V2 部署后的在线地址
+   - `EXTERNAL_API_KEY` = `v3_wms_7f3c9e1a8b4d2c6f5a9e0d3b7c1f4a8e`（与 V2 一致）
+   - `SESSION_SECRET` = `v3_session_secret_8f2a4c6e9b1d3f5a7c0e2b4d6f8a0c2e`
+   - `LLM_API_KEY` / `LLM_API_URL` / `LLM_MODEL`（可选）
+3. `npx vercel --prod` 部署。
+4. 同步在 V2 项目部署外部接口（V2 需配置 `EXTERNAL_API_KEY` 环境变量）。
+5. 部署后在 V3 调一次 `POST /api/init-db?seed=1` 和 `POST /api/sync/waybills` 完成初始化。
+6. 回填 README 的在线地址。
+
+### 遇到的问题与解决
+1. **Node 版本**：本地默认 Node 16，Next.js 16 要求 ≥20。→ 切换 nvm 的 Node 24。
+2. **Turbopack 深层动态路由**：`[code]/skus/[sku]` 首次编译返回 HTML 404。→ `touch` 触发重编译；生产 build 已确认路由注册。
+3. **`.next/dev` 缓存损坏**：dev 运行中执行 `rm -rf .next`（生产 build）导致 dev server 500。→ 换端口重启 dev，生产 build 不受影响。
+4. **类型问题**：`@vercel/postgres` sql 模板对非 primitive 严格、`Record<string,unknown>` 作 ReactNode。→ 元组类型化、ISO 字符串化、`any` 收窄。
+
