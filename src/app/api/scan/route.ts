@@ -3,7 +3,7 @@ import { sql } from '@/lib/db';
 import { successResponse, errorResponse } from '@/lib/response';
 import { getCurrentUser } from '@/lib/auth';
 import { evaluateQc } from '@/lib/qc-engine';
-import { checkSkuBelongs } from '@/lib/v2-client';
+import { checkSkuBelongsWithFallback } from '@/lib/v2-client';
 import { randomUUID } from 'crypto';
 
 interface ScanInput {
@@ -34,23 +34,29 @@ export async function POST(request: NextRequest) {
       return errorResponse('运单号与 SKU 必填', 400);
     }
 
-    // 1) 实时校验 SKU 归属于真实存在的运单（V2 接口）
-    const skuCheck = await checkSkuBelongs(waybill_code, sku_code);
-    if (!skuCheck.ok) {
-      // V2 不可用时降级：允许扫描但标注（品控场景安全优先，建议阻断，这里阻断并提示）
+    // 1) 实时校验 SKU 归属于真实存在的运单（V2 接口），V2 不可用时降级到本地快照
+    const skuCheck = await checkSkuBelongsWithFallback(waybill_code, sku_code);
+    if (!skuCheck.ok && skuCheck.source === 'UNAVAILABLE') {
+      // V2 不通且本地无缓存，无法判定 SKU 归属，安全阻断
       return errorResponse(
-        `SKU 归属校验失败：${skuCheck.message}（${skuCheck.errorClass}），Request-ID：${skuCheck.requestId}`,
-        502
+        `SKU 归属校验失败：V2 不可用且无本地缓存，无法判定归属。Request-ID：${skuCheck.requestId}`,
+        503
       );
     }
-    if (skuCheck.data && !skuCheck.data.belongs) {
-      return errorResponse(`SKU ${sku_code} 不属于运单 ${waybill_code}，禁止扫描`, 400, { request_id: skuCheck.requestId });
+    if (skuCheck.ok && !skuCheck.belongs) {
+      // 实时或缓存判定为「不属于」→ 阻断
+      return errorResponse(
+        `SKU ${sku_code} 不属于运单 ${waybill_code}，禁止扫描`,
+        400,
+        { request_id: skuCheck.requestId, source: skuCheck.source }
+      );
     }
 
-    // 取期望数量/规格（来自 V2 详情或本地快照）
-    const expected_quantity = skuCheck.data?.sku_quantity;
-    const expected_spec = skuCheck.data ? undefined : actual_spec; // V2 没返回 spec 时跳过该项检查
-    const sku_name = skuCheck.data?.sku_name;
+    // 取期望数量/规格
+    const expected_quantity = skuCheck.sku_quantity;
+    const expected_spec = actual_spec; // 简化：规格文本匹配不深度校验
+    const sku_name = skuCheck.sku_name;
+    const skuSource = skuCheck.source; // REALTIME 或 CACHE，用于结果展示
 
     // 2) 幂等：同运单同 SKU 有未关闭品控工单 → 只追加扫描记录，不新建工单，不重置暂扣
     const existingTicket = await sql`
@@ -125,7 +131,7 @@ export async function POST(request: NextRequest) {
         result: 'FAIL', action: 'TICKET_CREATED', ticket_id: ticketId, ticket_no: ticketNo,
         sub_type: evalResult.sub_type, severity: evalResult.severity,
         hit_rule_id: evalResult.hit_rule_id, message: `品控异常，已锁定批次并创建工单 ${ticketNo}`,
-        request_id: skuCheck.requestId,
+        request_id: skuCheck.requestId, sku_source: skuSource,
       }, '品控异常，已创建工单');
     } catch (e) {
       await sql.query('ROLLBACK');

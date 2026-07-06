@@ -142,6 +142,52 @@ export async function checkSkuBelongs(code: string, sku: string): Promise<V2Resu
   );
 }
 
+// 降级版 SKU 归属校验：实时调 V2，失败则从本地快照表的 sku_items 里查。
+// 用于扫描录入——V2 不可用时不能白屏，回退本地缓存并标注来源。
+export async function checkSkuBelongsWithFallback(
+  code: string,
+  sku: string
+): Promise<{
+  ok: boolean;
+  belongs: boolean;
+  sku_name?: string;
+  sku_quantity?: number;
+  source: 'REALTIME' | 'CACHE' | 'UNAVAILABLE';
+  requestId: string;
+  message?: string;
+}> {
+  const realtime = await checkSkuBelongs(code, sku);
+  if (realtime.ok && realtime.data) {
+    return {
+      ok: true,
+      belongs: realtime.data.belongs,
+      sku_name: realtime.data.sku_name,
+      sku_quantity: realtime.data.sku_quantity,
+      source: 'REALTIME',
+      requestId: realtime.requestId,
+    };
+  }
+  // 404 = 运单真不存在，不降级
+  if (realtime.status === 404) {
+    return { ok: false, belongs: false, source: 'REALTIME', requestId: realtime.requestId, message: realtime.message };
+  }
+  // 其他失败 → 降级到本地快照
+  const snap = await getLocalSnapshot(code);
+  if (snap && Array.isArray(snap.sku_items)) {
+    const found = (snap.sku_items as { sku_code: string; sku_name: string; sku_quantity: number }[]).find((it) => it.sku_code === sku);
+    return {
+      ok: true,
+      belongs: !!found,
+      sku_name: found?.sku_name,
+      sku_quantity: found?.sku_quantity,
+      source: 'CACHE',
+      requestId: realtime.requestId,
+      message: `V2 不可用，使用本地缓存校验（同步于 ${snap.synced_at}）`,
+    };
+  }
+  return { ok: false, belongs: false, source: 'UNAVAILABLE', requestId: realtime.requestId, message: realtime.message };
+}
+
 // 分页拉取运单列表（快照初始化/增量同步）
 export async function listWaybills(cursor?: string, limit = 100): Promise<V2Result<{ list: WaybillDetail[]; next_cursor: string | null; has_more: boolean }>> {
   const q = cursor ? `?cursor=${cursor}&limit=${limit}` : `?limit=${limit}`;
