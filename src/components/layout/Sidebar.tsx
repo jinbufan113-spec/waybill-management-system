@@ -124,7 +124,16 @@ export default function Sidebar() {
       {user && (
         <div className="p-3 border-t border-jt-border text-xs">
           <div className="font-medium text-jt-text truncate">{user.name}</div>
-          <div className="text-jt-text-secondary truncate">{user.roles.join(', ')}</div>
+          <div className="text-jt-text-secondary truncate mb-2">{user.roles.join(', ')}</div>
+          <button
+            onClick={async () => {
+              await fetch('/api/auth/logout', { method: 'POST' });
+              window.location.href = '/login';
+            }}
+            className="w-full text-left px-2 py-1 rounded text-jt-text-secondary hover:bg-red-50 hover:text-red-600 transition-colors"
+          >
+            退出登录
+          </button>
         </div>
       )}
     </aside>
