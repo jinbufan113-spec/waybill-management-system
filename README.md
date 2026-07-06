@@ -9,6 +9,7 @@
 - `docs/` — 交付文档
   - `API-CONTRACT.md` — V3↔V2 系统间接口契约
   - `ASSUMPTIONS.md` — 需求理解与假设说明（9 项留白）
+  - `AI-USAGE.md` — 大模型调用说明
   - `REFLECTION.md` — 反思题（6 题）
   - `EXECUTION-LOG.md` — 分步执行记录
 - `src/` — 源码（Next.js 16 App Router + TypeScript）
