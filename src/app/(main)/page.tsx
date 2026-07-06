@@ -104,7 +104,7 @@ export default async function HomePage() {
         </Card>
         <Card title="跨系统接口同步">
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-jt-text-secondary">最近一次同步</span><span className="font-medium">{stats.lastSync || '—'}</span></div>
+            <div className="flex justify-between"><span className="text-jt-text-secondary">最近一次同步</span><span className="font-medium">{stats.lastSync ? new Date(stats.lastSync as string).toLocaleString() : '—'}</span></div>
             <div className="flex justify-between"><span className="text-jt-text-secondary">24h 成功率</span><span className="font-medium">{stats.syncSuccessRate}%</span></div>
             <Link href="/monitor" className="block text-jt text-xs mt-2 hover:underline">查看接口监控 →</Link>
           </div>

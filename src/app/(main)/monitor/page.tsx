@@ -72,7 +72,7 @@ export default function MonitorPage() {
 
       <div className="grid grid-cols-4 gap-3">
         <Card title="最近一次同步">
-          <div className="text-sm font-medium">{data?.last_sync || '—'}</div>
+          <div className="text-sm font-medium">{data?.last_sync ? new Date(data.last_sync).toLocaleString() : '—'}</div>
           <div className="text-xs text-jt-text-secondary mt-1 break-all">{data?.last_request_id || ''}</div>
         </Card>
         <Card title="24h 调用次数">
