@@ -1,0 +1,293 @@
+/* ==========================================================================
+   专业后台风（B 风格）—— 只改样式，不改任何业务逻辑
+   主色 #00bebe 保持不变，通过 CSS 覆盖实现深色侧栏 + 卡片升级 + 表格美化
+   出问题删掉这个文件 + 移除 layout.tsx 的 import 即可完全回滚
+   ========================================================================== */
+
+/* —— 主题变量升级 —— */
+:root {
+  --jt-primary: #00bebe;
+  --jt-primary-light: #e6f9f9;
+  --jt-primary-dark: #009e9e;
+  --jt-primary-hover: #aff1e8;
+  --jt-success: #16a34a;
+  --jt-warning: #ea8a35;
+  --jt-error: #dc2626;
+  --jt-bg: #f5f7fa;
+  --jt-card-bg: #ffffff;
+  --jt-text: #1f2937;
+  --jt-text-secondary: #6b7280;
+  --jt-border: #e5e7eb;
+  --jt-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --jt-shadow-hover: 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+  --radius-card: 8px;
+  --radius-btn: 6px;
+  /* 侧边栏深色调色板 */
+  --sidebar-bg: #1e293b;
+  --sidebar-bg-2: #0f172a;
+  --sidebar-text: #cbd5e1;
+  --sidebar-text-active: #ffffff;
+  --sidebar-hover: #334155;
+}
+
+/* —— 全局背景与字体 —— */
+body {
+  background: var(--jt-bg);
+  color: var(--jt-text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* —— 滚动条美化 —— */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ==========================================================================
+   1. 深色侧边栏
+   ========================================================================== */
+aside[class*="bg-white"] {
+  background: linear-gradient(180deg, var(--sidebar-bg) 0%, var(--sidebar-bg-2) 100%) !important;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1) !important;
+  color: var(--sidebar-text) !important;
+}
+
+/* 侧边栏 Logo 区 */
+aside[class*="bg-white"] > div:first-child {
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+aside[class*="bg-white"] > div:first-child span {
+  color: var(--sidebar-text-active) !important;
+}
+aside[class*="bg-white"] > div:first-child .rounded {
+  background: var(--jt-primary) !important;
+}
+
+/* 侧边栏导航项 */
+aside[class*="bg-white"] nav a {
+  color: var(--sidebar-text) !important;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease !important;
+}
+aside[class*="bg-white"] nav a:hover {
+  background: var(--sidebar-hover) !important;
+  color: var(--sidebar-text-active) !important;
+}
+/* 激活态：左侧青色竖条 + 深色高亮 */
+aside[class*="bg-white"] nav a[class*="bg-jt-light"] {
+  background: rgba(0, 190, 190, 0.15) !important;
+  color: var(--sidebar-text-active) !important;
+  border-left-color: var(--jt-primary) !important;
+  font-weight: 500;
+}
+aside[class*="bg-white"] nav a[class*="bg-jt-light"] svg {
+  color: var(--jt-primary) !important;
+}
+
+/* 侧边栏底部用户区 */
+aside[class*="bg-white"] > div[class*="border-t"] {
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+aside[class*="bg-white"] > div[class*="border-t"] .font-medium {
+  color: var(--sidebar-text-active) !important;
+}
+aside[class*="bg-white"] > div[class*="border-t"] .text-jt-text-secondary {
+  color: var(--sidebar-text) !important;
+  opacity: 0.7;
+}
+aside[class*="bg-white"] > div[class*="border-t"] button {
+  color: var(--sidebar-text) !important;
+  border-radius: 6px;
+  padding: 6px 10px !important;
+}
+aside[class*="bg-white"] > div[class*="border-t"] button:hover {
+  background: rgba(220, 38, 38, 0.15) !important;
+  color: #fca5a5 !important;
+}
+
+/* ==========================================================================
+   2. 卡片升级（柔和阴影 + 标题装饰条 + hover 微动）
+   ========================================================================== */
+.bg-white[class*="border"][class*="rounded"][style*="border-radius: 8px"],
+.bg-white[class*="border"][style*="border-radius: 8px"] {
+  border-color: var(--jt-border) !important;
+  box-shadow: var(--jt-shadow) !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease !important;
+}
+
+/* 卡片标题区：装饰条变青色 + 字体加粗 */
+.bg-white h3.text-base {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600 !important;
+  color: #111827 !important;
+  font-size: 15px !important;
+}
+.bg-white h3.text-base > div:first-child.w-1 {
+  background: var(--jt-primary) !important;
+  border-radius: 2px !important;
+  width: 4px !important;
+  height: 16px !important;
+}
+
+/* 卡片内边距统一 */
+.bg-white.rounded-lg {
+  padding: 16px 20px !important;
+}
+
+/* ==========================================================================
+   3. 统计卡（工作台首页 6 格）
+   ========================================================================== */
+main a[class*="bg-white"][class*="rounded-lg"][class*="p-4"] {
+  border: 1px solid var(--jt-border) !important;
+  border-radius: 8px !important;
+  padding: 18px 16px !important;
+  transition: all 0.2s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+main a[class*="bg-white"][class*="rounded-lg"][class*="p-4"]:hover {
+  box-shadow: var(--jt-shadow-hover) !important;
+  transform: translateY(-2px);
+  border-color: var(--jt-primary) !important;
+}
+main a[class*="bg-white"][class*="rounded-lg"][class*="p-4"] > div:first-child {
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  line-height: 1.2;
+}
+
+/* ==========================================================================
+   4. 表格美化（表头深色 + 行 hover + 状态色块）
+   ========================================================================== */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+table thead tr[class*="border-b"] {
+  background: #f8fafc !important;
+  border-bottom: 2px solid var(--jt-border) !important;
+}
+table thead th {
+  font-weight: 600 !important;
+  color: #475569 !important;
+  text-transform: none;
+  padding: 10px 12px !important;
+  font-size: 12px !important;
+  letter-spacing: 0.02em;
+}
+table tbody tr {
+  transition: background 0.15s ease;
+}
+table tbody tr:hover {
+  background: #f8fafc !important;
+}
+table tbody td {
+  padding: 10px 12px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  color: #334155 !important;
+  vertical-align: middle;
+}
+
+/* 状态标签（小圆角胶囊） */
+td span[class*="px-1.5"][class*="rounded"][class*="text-xs"],
+td span[class*="px-2"][class*="rounded"][class*="text-xs"] {
+  display: inline-block;
+  padding: 2px 8px !important;
+  border-radius: 10px !important;
+  font-size: 11px !important;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   5. 按钮统一精致化
+   ========================================================================== */
+button[class*="bg-jt"][class*="text-white"] {
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 190, 190, 0.2);
+}
+button[class*="bg-jt"][class*="text-white"]:hover {
+  background: var(--jt-primary-dark) !important;
+  box-shadow: 0 2px 6px rgba(0, 190, 190, 0.35);
+}
+button[class*="bg-red-500"] {
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+button[class*="bg-red-500"]:hover {
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+}
+
+/* ==========================================================================
+   6. 输入框 / 下拉框 统一
+   ========================================================================== */
+input[class*="border"][class*="rounded"]:not([class*="bg-jt"]),
+input.input,
+select[class*="border"][class*="rounded"],
+select[class*="border"][class*="px-2"] {
+  border-color: #d1d5db !important;
+  border-radius: 6px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+input[class*="border"]:focus,
+select[class*="border"]:focus,
+textarea[class*="border"]:focus {
+  outline: none !important;
+  border-color: var(--jt-primary) !important;
+  box-shadow: 0 0 0 3px rgba(0, 190, 190, 0.12) !important;
+}
+
+/* ==========================================================================
+   7. 状态颜色微调（更柔和、专业）
+   ========================================================================== */
+.text-green-600 { color: #16a34a !important; }
+.text-red-500, .text-red-600 { color: #dc2626 !important; }
+.text-blue-600 { color: #2563eb !important; }
+.text-amber-600 { color: #d97706 !important; }
+.text-purple-600 { color: #7c3aed !important; }
+
+/* ==========================================================================
+   8. 页面标题区
+   ========================================================================== */
+main h1.text-xl {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+  letter-spacing: -0.01em;
+}
+main p.text-sm.text-jt-text-secondary {
+  color: #6b7280 !important;
+}
+
+/* ==========================================================================
+   9. 工单详情页审计日志时间线美化
+   ========================================================================== */
+.border-l-2.border-jt {
+  border-left-color: var(--jt-primary) !important;
+  background: #f8fafc;
+  border-radius: 0 6px 6px 0;
+  padding: 10px 12px !important;
+  margin-bottom: 6px;
+}
+
+/* ==========================================================================
+   10. 登录页美化
+   ========================================================================== */
+form[class*="space-y-3"] button[type="submit"] {
+  width: 100%;
+}

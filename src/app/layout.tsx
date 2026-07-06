@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./theme-pro.css";
 
 export const metadata: Metadata = {
   title: "运单全流程管理系统 V3",
