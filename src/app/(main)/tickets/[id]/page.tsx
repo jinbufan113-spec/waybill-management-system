@@ -56,7 +56,7 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
   const isOverdue = t.due_at && new Date(t.due_at as string) < new Date() && ['PENDING', 'L1_REVIEWING', 'L2_REVIEWING'].includes(t.state as string);
 
   return (
-    <div className="p-6 space-y-4 max-w-[1100px]">
+    <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <Link href="/tickets" className="text-xs text-jt-text-secondary hover:text-jt">← 返回列表</Link>
