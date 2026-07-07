@@ -291,8 +291,6 @@ textarea[class*="border"]:focus {
 /* 所有页面最外层容器统一加左右留白 + 上下留白，让标题/统计卡/Card 都对齐到同一条线 */
 main > div[class*="p-6"] {
   padding: 20px 24px !important;
-  max-width: 1400px;
-  margin: 0 auto;
 }
 
 main h1.text-xl {
