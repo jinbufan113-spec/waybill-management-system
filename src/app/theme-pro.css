@@ -129,6 +129,13 @@ aside[class*="bg-white"] > div[class*="border-t"] button:hover {
 /* ==========================================================================
    2. 卡片升级（柔和阴影 + 标题装饰条 + hover 微动）
    ========================================================================== */
+/* 统一去掉 Card 组件内置的 margin:16px（这是对齐错乱的根源），改用外层 p-6 控制 */
+.bg-white[style*="margin: 16px"],
+.bg-white[style*="margin:16px"],
+.bg-white.border[style*="border-radius: 8px"][style*="margin"] {
+  margin: 0 !important;
+}
+
 .bg-white[class*="border"][class*="rounded"][style*="border-radius: 8px"],
 .bg-white[class*="border"][style*="border-radius: 8px"] {
   border-color: var(--jt-border) !important;
@@ -167,6 +174,7 @@ main a[class*="bg-white"][class*="rounded-lg"][class*="p-4"] {
   transition: all 0.2s ease !important;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--jt-shadow) !important;
 }
 main a[class*="bg-white"][class*="rounded-lg"][class*="p-4"]:hover {
   box-shadow: var(--jt-shadow-hover) !important;
@@ -174,9 +182,16 @@ main a[class*="bg-white"][class*="rounded-lg"][class*="p-4"]:hover {
   border-color: var(--jt-primary) !important;
 }
 main a[class*="bg-white"][class*="rounded-lg"][class*="p-4"] > div:first-child {
-  font-size: 28px !important;
+  font-size: 30px !important;
   font-weight: 700 !important;
-  line-height: 1.2;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+main a[class*="bg-white"][class*="rounded-lg"][class*="p-4"] > div:last-child {
+  font-size: 12px !important;
+  margin-top: 6px !important;
+  color: #6b7280 !important;
+  font-weight: 500;
 }
 
 /* ==========================================================================
