@@ -129,7 +129,8 @@ aside[class*="bg-white"] > div[class*="border-t"] button:hover {
 /* ==========================================================================
    2. 卡片升级（柔和阴影 + 标题装饰条 + hover 微动）
    ========================================================================== */
-/* 统一去掉 Card 组件内置的 margin:16px（这是对齐错乱的根源），改用外层 p-6 控制 */
+/* 统一 Card 的 margin（原来各处不一致）：让 Card 和同级元素共用外层 padding 对齐。
+   Card 组件自带 margin:16px，会让卡片比标题/统计卡更内缩——这里统一规整。 */
 .bg-white[style*="margin: 16px"],
 .bg-white[style*="margin:16px"],
 .bg-white.border[style*="border-radius: 8px"][style*="margin"] {
@@ -285,8 +286,15 @@ textarea[class*="border"]:focus {
 .text-purple-600 { color: #7c3aed !important; }
 
 /* ==========================================================================
-   8. 页面标题区
+   8. 页面标题区 + 主内容区统一左右留白
    ========================================================================== */
+/* 所有页面最外层容器统一加左右留白 + 上下留白，让标题/统计卡/Card 都对齐到同一条线 */
+main > div[class*="p-6"] {
+  padding: 24px 32px !important;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 main h1.text-xl {
   font-size: 20px !important;
   font-weight: 600 !important;
