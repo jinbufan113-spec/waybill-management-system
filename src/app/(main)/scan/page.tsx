@@ -42,7 +42,7 @@ export default function ScanPage() {
   };
 
   return (
-    <div className="p-6 space-y-4 max-w-[900px]">
+    <div className="p-6 space-y-4">
       <div>
         <h1 className="text-xl font-bold text-jt-text">扫描品控</h1>
         <p className="text-sm text-jt-text-secondary mt-1">手工输入条码/SKU 模拟扫描枪 · 实时校验 SKU 归属 · 品控规则引擎自动判定</p>

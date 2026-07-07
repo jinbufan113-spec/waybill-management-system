@@ -292,6 +292,14 @@ textarea[class*="border"]:focus {
 main > div[class*="p-6"] {
   padding: 20px 24px !important;
 }
+/* 主内容区直接子元素之间的纵向间距加大（解决三块挤在一起的问题） */
+main > div[class*="p-6"] > * + * {
+  margin-top: 24px !important;
+}
+/* 工作台下方的"工单来源分布 / 跨系统接口同步"两个 Card 之间也加大间距 */
+main > div[class*="p-6"] > div[class*="grid"] {
+  gap: 20px !important;
+}
 
 main h1.text-xl {
   font-size: 20px !important;
